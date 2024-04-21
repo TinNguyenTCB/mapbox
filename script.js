@@ -79,43 +79,40 @@ function calculateDistance(coord1, coord2) {
 function deg2rad(deg) {
   return deg * (Math.PI / 180);
 }
+
 function successLocation(position) {
   const userCoordinates = [position.coords.longitude, position.coords.latitude];
   setupMap(userCoordinates);
   addUserMarker(userCoordinates);
 }
 
-function errorLocation(error) {
-  console.error("Không thể cập nhật vị trí", error);
+function errorLocation() {
   setupMap(mapCenterDefault);
   addUserMarker(mapCenterDefault);
 }
+
 function setupMap(center) {
-  map = new mapboxgl.Map({
-    container: "map",
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: center,
-    zoom: 15,
-  });
+  if (!map) {
+    map = new mapboxgl.Map({
+      container: "map",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: center,
+      zoom: 15,
+    });
 
-  const nav = new mapboxgl.NavigationControl();
-  map.addControl(nav);
+    const nav = new mapboxgl.NavigationControl();
+    map.addControl(nav);
 
-  directions = new MapboxDirections({
-    accessToken: mapboxgl.accessToken,
-    language: "vi",
-    unit: "metric",
-  });
+    directions = new MapboxDirections({
+      accessToken: mapboxgl.accessToken,
+      language: "vi",
+      unit: "metric",
+    });
 
-  map.addControl(directions, "top-left");
-
-  navigator.geolocation.watchPosition(successLocation, errorLocation, {
-    enableHighAccuracy: true,
-  });
-
-  navigator.geolocation.watchPosition(successLocation, errorLocation, {
-    enableHighAccuracy: true,
-  });
+    map.addControl(directions, "top-left");
+  } else {
+    map.setCenter(center);
+  }
 
   getDirectionsAndSpeak(center);
 }
@@ -143,6 +140,13 @@ function addUserMarker(coordinates) {
     });
   }
 }
-navigator.geolocation.watchPosition(successLocation, errorLocation, {
+
+setInterval(() => {
+  navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
+    enableHighAccuracy: true,
+  });
+}, 5000);
+
+navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
   enableHighAccuracy: true,
 });
