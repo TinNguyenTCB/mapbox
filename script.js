@@ -84,7 +84,9 @@ function successLocation(position) {
   setupMap(userCoordinates);
   addUserMarker(userCoordinates);
 }
-function errorLocation() {
+
+function errorLocation(error) {
+  console.error("Không thể cập nhật vị trí", error);
   setupMap(mapCenterDefault);
   addUserMarker(mapCenterDefault);
 }
@@ -107,7 +109,15 @@ function setupMap(center) {
 
   map.addControl(directions, "top-left");
 
-  getDirectionsAndSpeak();
+  navigator.geolocation.watchPosition(successLocation, errorLocation, {
+    enableHighAccuracy: true,
+  });
+
+  navigator.geolocation.watchPosition(successLocation, errorLocation, {
+    enableHighAccuracy: true,
+  });
+
+  getDirectionsAndSpeak(center);
 }
 
 function addPopupToMarker(marker, popupContent) {
@@ -133,6 +143,6 @@ function addUserMarker(coordinates) {
     });
   }
 }
-navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
+navigator.geolocation.watchPosition(successLocation, errorLocation, {
   enableHighAccuracy: true,
 });
