@@ -38,16 +38,17 @@ async function textToSpeech(text) {
   audio.play();
 }
 
-function getDirectionsAndSpeak(userCoordinates) {
+function getDirectionsAndSpeak() {
   directions.on("route", function (e) {
     const routes = e.route;
     const route = routes[0];
     const steps = route.legs[0].steps;
+    const markerCoordinates = userMarker.getLngLat();
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
       const instruction = step.maneuver.instruction;
       const stepCoordinates = step.maneuver.location;
-      const distance = calculateDistance(userCoordinates, stepCoordinates);
+      const distance = calculateDistance(markerCoordinates, stepCoordinates);
       if (distance < 50) {
         textToSpeech(instruction);
         break;
@@ -84,6 +85,7 @@ function successLocation(position) {
   const userCoordinates = [position.coords.longitude, position.coords.latitude];
   setupMap(userCoordinates);
   addUserMarker(userCoordinates);
+  getDirectionsAndSpeak();
 }
 
 function errorLocation() {
