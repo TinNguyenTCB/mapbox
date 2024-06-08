@@ -25,12 +25,30 @@
       height: 100vh;
       width: 100vw;
     }
+
+    #recenterButton {
+      position: absolute;
+      top: 70px;
+      right: -40px;
+      padding: 10px;
+      margin: 50px;
+      background-color: white;
+      border: none;
+      cursor: pointer;
+      z-index: 1;
+      border-radius: 50%;
+    }
   </style>
-  <script src="script.js" defer></script>
+  <script src="script2.js" defer></script>
 </head>
 
 <body>
   <div id='map'></div>
+  <button id="recenterButton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5a7 7 0 0 0-7 7c0 4.55 7 13 7 13s7-8.45 7-13a7 7 0 0 0-7-7z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg></button>
 </body>
 
 </html>
