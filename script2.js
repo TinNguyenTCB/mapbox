@@ -4,6 +4,8 @@ mapboxgl.accessToken =
 let map;
 let userMarker;
 let directions;
+let firstLoad = true;
+let userCoordinates;
 
 const mapCenterDefault = [-2.24, 53.48];
 
@@ -65,7 +67,7 @@ function calculateDistance(coord1, coord2) {
 
   const R = 6371;
   const dLat = deg2rad(lat2 - lat1);
-  const dLon = deg2rad(lon2 - lon1);
+  const dLon = deg2rad(lat2 - lon1);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(deg2rad(lat1)) *
@@ -82,15 +84,21 @@ function deg2rad(deg) {
 }
 
 function successLocation(position) {
-  const userCoordinates = [position.coords.longitude, position.coords.latitude];
-  setupMap(userCoordinates);
+  userCoordinates = [position.coords.longitude, position.coords.latitude];
+  if (firstLoad) {
+    setupMap(userCoordinates);
+    firstLoad = false;
+  }
   addUserMarker(userCoordinates);
   getDirectionsAndSpeak();
 }
 
 function errorLocation() {
-  setupMap(mapCenterDefault);
-  addUserMarker(mapCenterDefault);
+  if (firstLoad) {
+    setupMap(mapCenterDefault);
+    addUserMarker(mapCenterDefault);
+    firstLoad = false;
+  }
 }
 
 function setupMap(center) {
@@ -143,6 +151,13 @@ function addUserMarker(coordinates) {
   }
 }
 
+// Hàm để đưa bản đồ về vị trí người dùng
+function recenterMap() {
+  if (userCoordinates) {
+    map.setCenter(userCoordinates);
+  }
+}
+
 setInterval(() => {
   navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
     enableHighAccuracy: true,
@@ -152,3 +167,8 @@ setInterval(() => {
 navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
   enableHighAccuracy: true,
 });
+
+// Thêm sự kiện click cho nút "Về Vị Trí Của Tôi"
+document
+  .getElementById("recenterButton")
+  .addEventListener("click", recenterMap);
